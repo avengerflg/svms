@@ -58,7 +58,7 @@ const LoginPage: React.FC = () => {
   // Clear errors when component mounts
   useEffect(() => {
     clearError();
-  }, [clearError]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // If authenticated, don't render the login form (show spinner)
   if (isAuthenticated && user) {

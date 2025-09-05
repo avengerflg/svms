@@ -3,9 +3,11 @@ import React, {
   useContext,
   useReducer,
   useEffect,
+  useRef,
+  useCallback,
   ReactNode,
 } from "react";
-import { User, UserRole } from "../types";
+import { User } from "../types";
 import { authService } from "../services/authService";
 
 interface AuthState {
@@ -93,41 +95,77 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  const hasInitialized = useRef(false);
 
-  // Check for existing authentication on mount
+  // Timeout to prevent infinite loading
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        if (authService.isAuthenticated()) {
-          const user = await authService.getCurrentUser();
-          authService.storeUser(user);
-          dispatch({ type: "AUTH_SUCCESS", payload: user });
-        } else {
-          dispatch({ type: "SET_LOADING", payload: false });
-        }
-      } catch (error) {
-        console.error("Auth check failed:", error);
-        authService.logout();
-        dispatch({ type: "AUTH_FAILURE", payload: "Authentication failed" });
+    const timeout = setTimeout(() => {
+      if (state.isLoading && !state.isAuthenticated) {
+        console.warn("AuthContext: Loading timeout, setting to false");
+        dispatch({ type: "SET_LOADING", payload: false });
       }
+    }, 3000); // Reduced to 3 seconds
+
+    return () => clearTimeout(timeout);
+  }, [state.isLoading, state.isAuthenticated]);
+
+  // Check for existing authentication on mount - ONLY ONCE
+  useEffect(() => {
+    // Skip if already initialized
+    if (hasInitialized.current) {
+      return;
+    }
+
+    const checkAuth = () => {
+      console.log("AuthContext: Initial authentication check...");
+
+      // Check if we have a token and stored user
+      if (authService.isAuthenticated()) {
+        const storedUser = authService.getStoredUser();
+        if (storedUser) {
+          console.log(
+            "AuthContext: Found stored user, using immediately:",
+            storedUser
+          );
+          dispatch({ type: "AUTH_SUCCESS", payload: storedUser });
+          hasInitialized.current = true;
+          return;
+        }
+      }
+
+      // No token or stored user
+      console.log("AuthContext: No valid auth data found");
+      dispatch({ type: "SET_LOADING", payload: false });
+      hasInitialized.current = true;
     };
 
+    // Run immediately without async to avoid delays
     checkAuth();
-  }, []);
+  }, []); // Empty dependency array - run only once
 
-  const login = async (email: string, password: string): Promise<void> => {
-    try {
-      dispatch({ type: "AUTH_START" });
-      const { user } = await authService.login({ email, password });
-      authService.storeUser(user);
-      dispatch({ type: "AUTH_SUCCESS", payload: user });
-    } catch (error: any) {
-      dispatch({ type: "AUTH_FAILURE", payload: error.message });
-      throw error;
-    }
-  };
+  const login = useCallback(
+    async (email: string, password: string): Promise<void> => {
+      try {
+        dispatch({ type: "AUTH_START" });
+        const { user } = await authService.login({ email, password });
+        authService.storeUser(user);
 
-  const register = async (userData: any): Promise<void> => {
+        // Set initialized flag to prevent interference from useEffect
+        hasInitialized.current = true;
+
+        // Dispatch success immediately
+        dispatch({ type: "AUTH_SUCCESS", payload: user });
+
+        console.log("AuthContext: Login successful, user authenticated:", user);
+      } catch (error: any) {
+        dispatch({ type: "AUTH_FAILURE", payload: error.message });
+        throw error;
+      }
+    },
+    []
+  );
+
+  const register = useCallback(async (userData: any): Promise<void> => {
     try {
       dispatch({ type: "AUTH_START" });
       const { user } = await authService.register(userData);
@@ -137,16 +175,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       dispatch({ type: "AUTH_FAILURE", payload: error.message });
       throw error;
     }
-  };
+  }, []);
 
-  const logout = (): void => {
+  const logout = useCallback((): void => {
     authService.logout();
     dispatch({ type: "AUTH_LOGOUT" });
-  };
+  }, []);
 
-  const clearError = (): void => {
+  const clearError = useCallback((): void => {
     dispatch({ type: "CLEAR_ERROR" });
-  };
+  }, []);
 
   const refreshUser = async (): Promise<void> => {
     try {
