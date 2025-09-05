@@ -103,7 +103,10 @@ print_status "Configuring firewall..."
 firewall-cmd --permanent --add-port=80/tcp
 firewall-cmd --permanent --add-port=443/tcp
 firewall-cmd --permanent --add-port=3000/tcp
+firewall-cmd --permanent --add-port=3443/tcp
 firewall-cmd --permanent --add-port=5000/tcp
+firewall-cmd --permanent --add-port=27018/tcp
+firewall-cmd --permanent --add-port=6380/tcp
 firewall-cmd --reload
 
 # Step 7: Deploy with Docker
