@@ -7,7 +7,13 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "start:dev": "ts-node src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:prod": "NODE_ENV=production ts-node src/server.ts",
+    "seed": "ts-node src/seeders/userSeeder.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pm2:start": "pm2 start ecosystem.config.json",
+    "pm2:stop": "pm2 stop svms-backend",
+    "pm2:restart": "pm2 restart svms-backend",
+    "pm2:logs": "pm2 logs svms-backend"
   },
   "keywords": [
     "svms",
