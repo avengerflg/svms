@@ -1,10 +1,11 @@
-# Use Node.js 18 Alpine as base image
-FROM node:18-alpine
+# Multi-stage build for Node.js backend
 
-# Set working directory
+# Build stage
+FROM node:18-alpine AS builder
+
 WORKDIR /app
 
-# Install system dependencies
+# Install build dependencies
 RUN apk add --no-cache \
     python3 \
     make \
@@ -22,11 +23,46 @@ RUN apk add --no-cache \
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install all dependencies (including dev dependencies for building)
+RUN npm ci
 
 # Copy source code
 COPY . .
+
+# Build TypeScript to JavaScript
+RUN npm run build
+
+# Production stage
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    cairo-dev \
+    jpeg-dev \
+    pango-dev \
+    musl-dev \
+    giflib-dev \
+    pixman-dev \
+    pangomm-dev \
+    libjpeg-turbo-dev \
+    freetype-dev
+
+# Copy package files
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy built application from builder stage
+COPY --from=builder /app/dist ./dist
+
+# Copy other necessary files
+COPY --from=builder /app/src/seeders ./src/seeders
 
 # Create uploads directory
 RUN mkdir -p uploads/badges uploads/documents uploads/photos uploads/qrcodes

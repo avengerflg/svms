@@ -11,7 +11,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-admin123}
       MONGO_INITDB_DATABASE: svms_production
     ports:
-      - "27018:27017"  # Use port 27018 to avoid conflict
+      - "27018:27017" # Use port 27018 to avoid conflict
     volumes:
       - mongodb_data:/data/db
       - ./backend/scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
@@ -71,8 +71,8 @@ services:
     container_name: svms-frontend
     restart: unless-stopped
     ports:
-      - "3000:80"  # Map to port 3000 instead of 80 to avoid conflict with CyberPanel
-      - "3443:443"  # Map to port 3443 for SSL
+      - "3000:80" # Map to port 3000 instead of 80 to avoid conflict with CyberPanel
+      - "3443:443" # Map to port 3443 for SSL
     depends_on:
       backend:
         condition: service_healthy
@@ -99,7 +99,7 @@ services:
     container_name: svms-redis
     restart: unless-stopped
     ports:
-      - "6380:6379"  # Use port 6380 to avoid conflict
+      - "6380:6379" # Use port 6380 to avoid conflict
     volumes:
       - redis_data:/data
     networks:
