@@ -1,6 +1,7 @@
 # SVMS Deployment Guide - Hostinger VPS with CyberPanel
 
 ## Prerequisites
+
 - Hostinger VPS with CyberPanel installed
 - SSH access to your VPS
 - Domain name pointed to your VPS IP
@@ -9,6 +10,7 @@
 ## Deployment Steps
 
 ### 1. VPS Setup
+
 ```bash
 # SSH into your VPS
 ssh root@31.97.239.153
@@ -30,12 +32,14 @@ npm install -g pm2
 ```
 
 ### 2. CyberPanel Configuration
+
 1. Login to CyberPanel (https://your-vps-ip:8090)
 2. Create new website for your domain
 3. Enable Node.js for the website
 4. Configure SSL certificate
 
 ### 3. Code Deployment
+
 ```bash
 # Navigate to your website directory
 cd /home/yourdomain.com/public_html
@@ -56,6 +60,7 @@ npm run build
 ```
 
 ### 4. Environment Configuration
+
 ```bash
 # Create production environment file
 cp backend/.env.example backend/.env
@@ -65,6 +70,7 @@ nano backend/.env
 ```
 
 ### 5. Database Setup
+
 ```bash
 # Start MongoDB service
 systemctl start mongod
@@ -76,6 +82,7 @@ npm run seed
 ```
 
 ### 6. Process Management
+
 ```bash
 # Start backend with PM2
 cd backend
@@ -87,6 +94,7 @@ cp -r frontend/build/* /home/yourdomain.com/public_html/
 ```
 
 ### 7. Nginx Configuration (if needed)
+
 ```nginx
 # Proxy API requests to Node.js backend
 location /api {
@@ -100,6 +108,7 @@ location /api {
 ```
 
 ## Production Environment Variables
+
 ```env
 NODE_ENV=production
 PORT=5000
@@ -110,6 +119,7 @@ CORS_ORIGIN=https://yourdomain.com
 ```
 
 ## Security Checklist
+
 - [ ] MongoDB secured with authentication
 - [ ] SSL certificate installed
 - [ ] Firewall configured

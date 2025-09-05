@@ -113,3 +113,15 @@ backend/uploads/
 
 # MongoDB dump
 dump/
+
+# Docker specific
+.env.docker
+docker-compose.override.yml
+
+# Docker volumes (if mounted locally)
+data/
+mongodb_data/
+uploads_data/
+logs_data/
+redis_data/
+letsencrypt_data/
