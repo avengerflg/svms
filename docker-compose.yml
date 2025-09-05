@@ -37,7 +37,7 @@ services:
       MONGODB_URI: mongodb://admin:${MONGO_PASSWORD:-admin123}@mongodb:27017/svms_production?authSource=admin
       JWT_SECRET: ${JWT_SECRET:-your-super-secure-jwt-secret-key-change-in-production}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secure-refresh-secret-key-change-in-production}
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://31.97.239.153:3000}
     ports:
       - "5000:5000"
     volumes:
@@ -68,6 +68,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=http://31.97.239.153:5000/api
     container_name: svms-frontend
     restart: unless-stopped
     ports:
