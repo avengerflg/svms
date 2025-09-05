@@ -14,6 +14,7 @@ Docker provides several advantages for deploying SVMS:
 ## 🚀 **Quick Start**
 
 ### Prerequisites
+
 - Docker Engine 20.0+
 - Docker Compose 2.0+
 - 2GB+ RAM
@@ -36,6 +37,7 @@ cd svms
 ## 📋 **Deployment Options**
 
 ### 1. Development Environment
+
 Perfect for local development and testing.
 
 ```bash
@@ -49,12 +51,14 @@ Perfect for local development and testing.
 ```
 
 **Services included:**
+
 - Frontend (React) on port 3000
 - Backend (Node.js) on port 5000
 - MongoDB on port 27017
 - Redis on port 6379
 
 ### 2. Production Environment
+
 Full production setup with SSL, reverse proxy, and security.
 
 ```bash
@@ -70,6 +74,7 @@ nano .env.docker
 ```
 
 **Services included:**
+
 - Traefik reverse proxy with automatic SSL
 - Frontend (React) with Nginx
 - Backend (Node.js) API
@@ -100,6 +105,7 @@ CORS_ORIGIN=https://yourdomain.com
 ### For Your VPS (31.97.239.153)
 
 1. **Point your domain to VPS IP:**
+
    ```bash
    # In your domain DNS settings
    A record: yourdomain.com → 31.97.239.153
@@ -107,6 +113,7 @@ CORS_ORIGIN=https://yourdomain.com
    ```
 
 2. **Update configuration:**
+
    ```bash
    # Edit .env.docker
    DOMAIN=yourdomain.com
@@ -167,16 +174,19 @@ curl http://localhost:5000/api/health
 ## 🔒 **Security Features**
 
 ### Automatic SSL (Production)
+
 - LetsEncrypt integration via Traefik
 - Automatic certificate renewal
 - HTTP to HTTPS redirect
 
 ### Database Security
+
 - MongoDB authentication enabled
 - Strong password generation
 - Network isolation
 
 ### Application Security
+
 - Secure JWT secrets
 - CORS protection
 - Security headers
@@ -198,17 +208,19 @@ docker-compose -f docker-compose.prod.yml up --scale backend=2 -d
 ### Common Issues
 
 1. **Port already in use:**
+
    ```bash
    # Check what's using the port
    sudo lsof -i :80
    sudo lsof -i :443
-   
+
    # Stop conflicting services
    sudo systemctl stop apache2
    sudo systemctl stop nginx
    ```
 
 2. **Permission denied:**
+
    ```bash
    # Fix Docker permissions
    sudo usermod -aG docker $USER
@@ -216,19 +228,21 @@ docker-compose -f docker-compose.prod.yml up --scale backend=2 -d
    ```
 
 3. **SSL certificate issues:**
+
    ```bash
    # Check Traefik logs
    docker-compose logs traefik
-   
+
    # Verify domain DNS
    nslookup yourdomain.com
    ```
 
 4. **Database connection failed:**
+
    ```bash
    # Check MongoDB logs
    docker-compose logs mongodb
-   
+
    # Restart database
    docker-compose restart mongodb
    ```
@@ -238,31 +252,34 @@ docker-compose -f docker-compose.prod.yml up --scale backend=2 -d
 ### Step-by-step for Hostinger VPS (31.97.239.153):
 
 1. **SSH into your VPS:**
+
    ```bash
    ssh root@31.97.239.153
    ```
 
 2. **Install Docker:**
+
    ```bash
    # Install Docker
    curl -fsSL https://get.docker.com -o get-docker.sh
    sh get-docker.sh
-   
+
    # Install Docker Compose
    curl -L "https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
    chmod +x /usr/local/bin/docker-compose
    ```
 
 3. **Clone and deploy:**
+
    ```bash
    # Clone repository
    git clone https://github.com/avengerflg/svms.git
    cd svms
-   
+
    # Update domain in configuration
    nano .env.docker
    # Set DOMAIN=yourdomain.com
-   
+
    # Deploy production
    ./docker-deploy.sh production
    ```

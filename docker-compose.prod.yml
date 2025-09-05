@@ -1,5 +1,5 @@
 # Production Docker Compose with SSL and domain
-version: '3.8'
+version: "3.8"
 
 services:
   # Reverse Proxy (Traefik)
@@ -24,7 +24,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"  # Traefik dashboard
+      - "8080:8080" # Traefik dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - letsencrypt_data:/letsencrypt
@@ -60,7 +60,7 @@ services:
 
   # Backend API
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: svms-backend
@@ -89,7 +89,7 @@ services:
 
   # Frontend (React)
   frontend:
-    build: 
+    build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: svms-frontend
